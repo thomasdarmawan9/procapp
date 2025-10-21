@@ -1,0 +1,23 @@
+{
+  "app.title": "Core Procurement Management",
+  "nav.dashboard": "Dashboard",
+  "nav.requisitions": "Requisitions",
+  "nav.pos": "Purchase Orders",
+  "nav.rfqs": "RFQs",
+  "nav.documents": "Documents & Audit Trail",
+  "nav.vendors": "Vendors",
+  "nav.approvals": "Approvals",
+  "nav.settings": "Settings",
+  "actions.create": "Create",
+  "actions.edit": "Edit",
+  "actions.submit": "Submit",
+  "actions.save": "Save",
+  "actions.cancel": "Cancel",
+  "actions.approve": "Approve",
+  "actions.return": "Return",
+  "labels.status": "Status",
+  "labels.requester": "Requester",
+  "labels.costCenter": "Cost Center",
+  "labels.total": "Total",
+  "labels.department": "Department"
+}

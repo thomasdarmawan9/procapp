@@ -1,0 +1,22 @@
+{
+  "app.title": "Manajemen Pengadaan Inti",
+  "nav.dashboard": "Dasbor",
+  "nav.requisitions": "Permintaan Pembelian",
+  "nav.pos": "PO",
+  "nav.rfqs": "RFQ",
+  "nav.vendors": "Vendor",
+  "nav.approvals": "Persetujuan",
+  "nav.settings": "Pengaturan",
+  "actions.create": "Buat",
+  "actions.edit": "Ubah",
+  "actions.submit": "Kirim",
+  "actions.save": "Simpan",
+  "actions.cancel": "Batal",
+  "actions.approve": "Setujui",
+  "actions.return": "Kembalikan",
+  "labels.status": "Status",
+  "labels.requester": "Peminta",
+  "labels.costCenter": "Cost Center",
+  "labels.total": "Total",
+  "labels.department": "Departemen"
+}

@@ -1,0 +1,9 @@
+.next
+node_modules
+.turbo
+dist
+coverage
+.idea
+.vscode
+*.log
+*.DS_Store

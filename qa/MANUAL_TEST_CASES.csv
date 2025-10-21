@@ -1,0 +1,33 @@
+ID,Area,Title,Preconditions,Steps,Expected,Priority,Type(Pos/Neg/Edge),Data,Status
+TC-001,Auth,Login as Employee and redirect to dashboard,"App running; landing on /login","1. Open /login\n2. Select Employee role\n3. Enter employee@example.com\n4. Click Sign In","User redirected to /dashboard, session cookie set, Employee menu items visible",P0,Pos,"role=employee",Not Run
+TC-002,Auth,RBAC blocks procurement settings for Employee,"Logged in as employee","1. Attempt to navigate to /settings/approval-rules","User redirected/blocked with 403 toast",P0,Neg,,Not Run
+TC-003,Requisition,Create requisition with valid line items,"Logged in as employee","1. Go to /requisitions/new\n2. Fill department, cost center, neededBy future date\n3. Add line item qty 5, price 2500000 IDR\n4. Upload attachment\n5. Submit Create","Requisition saved in draft list with calculated total",P0,Pos,"qty=5;unitPrice=2500000",Not Run
+TC-004,Requisition,Quantity must be >0,"On /requisitions/new","1. Add line item quantity 0\n2. Click Save","Inline error 'Quantity must be greater than 0' stays",P1,Neg,,Not Run
+TC-005,Requisition,Needed by date cannot be past,"On new requisition form","1. Select neededBy as yesterday\n2. Submit","Validation error shown and requisition not saved",P1,Neg,,Not Run
+TC-006,Requisition,Edit draft requisition updates totals,"Existing draft PR","1. Open draft\n2. Edit qty from 5 to 6\n3. Save","Total recalculates, last updated timestamp changes",P1,Pos,,Not Run
+TC-007,Requisition,Submit requisition moves to submitted status,"Draft requisition exists","1. Open draft\n2. Click Submit\n3. Confirm","Status becomes Submitted, approval timeline shows submit event",P0,Pos,,Not Run
+TC-008,Requisition,Attachments accept only <=5MB,"Have 10MB file","1. Try upload 10MB file","Error toast/warning blocking upload",P2,Edge,"file=10MB.zip",Not Run
+TC-009,Approvals,Approver sees pending requisition,"Logged in as approver","1. Navigate to /approvals","Submitted requisition appears with timeline",P0,Pos,,Not Run
+TC-010,Approvals,Return requires comment,"Approver inbox","1. Click Return without comment\n2. Attempt submit","Validation demands comment",P0,Neg,,Not Run
+TC-011,Approvals,Return with comment resets to draft,"Approver inbox","1. Return with comment\n2. Switch to employee view","Requisition back to draft with comment recorded",P0,Pos,,Not Run
+TC-012,Approvals,Finance cannot approve before approver step,"Logged in finance, submitted req awaiting approver","1. Attempt to approve","API denies, UI disables action",P0,Neg,,Not Run
+TC-013,RFQ,Create RFQ from approved requisition,"Approved requisition exists","1. Go /rfqs/new?fromReqId=approvedId\n2. Select vendors >=1\n3. Pick future due date\n4. Submit","RFQ in list with Draft status",P1,Pos,,Not Run
+TC-014,RFQ,Vendor selection required,"On RFQ form","1. Deselect all vendors\n2. Submit","Inline error requesting at least one vendor",P1,Neg,,Not Run
+TC-015,RFQ,Send RFQ transitions to Sent,"RFQ Draft exists","1. Open detail\n2. Click Send","Status changes to Sent, event logged",P1,Pos,,Not Run
+TC-016,RFQ,Compare quotes highlights best price,"RFQ with multiple quotes","1. Open compare table","Lowest total and lead time highlighted in green",P2,Edge,,Not Run
+TC-017,PO,Create PO draft from RFQ winner,"RFQ Received with quotes","1. Select winner\n2. Click Create PO","Draft PO appears in /pos linked to requisition",P0,Pos,,Not Run
+TC-018,PO,Issue PO updates status,"PO draft exists","1. Open PO detail\n2. Click Issue","Status becomes Issued, timestamp set",P1,Pos,,Not Run
+TC-019,Vendor,Create vendor with unique name,"Logged in procurement admin","1. Open /vendors\n2. Click Add\n3. Fill form valid\n4. Save","Vendor added, list refreshes",P1,Pos,,Not Run
+TC-020,Vendor,Duplicate vendor name rejected,"Vendor A exists","1. Create vendor with same name","Error 'name must be unique' displayed",P1,Neg,,Not Run
+TC-021,Vendor,Rating limited 1..5,"Vendor modal","1. Enter rating 6\n2. Save","Validation prevents save",P2,Neg,,Not Run
+TC-022,Settings,Create approval rule with steps,"Procurement admin","1. Open /settings/approval-rules\n2. Add rule amount >= 1e8 with approver+finance\n3. Save","Rule listed with ordered steps",P1,Pos,,Not Run
+TC-023,Settings,Rule must have condition,"In rule sheet","1. Leave all conditions blank\n2. Attempt save","Error requiring at least one condition",P1,Neg,,Not Run
+TC-024,Settings,Rule evaluator applies finance for high amount,"Have requisition 120M","1. Submit requisition\n2. Inspect approval steps","Finance step included before procurement admin",P0,Edge,,Not Run
+TC-025,Global,Locale switch retains form data,"On requisition form partially filled","1. Change locale to ID\n2. Observe form","Entered values persist, labels switch to ID",P2,Edge,,Not Run
+TC-026,Global,Mobile layout accessible at 360px,"Use devtools mobile","1. Load /dashboard at 360px","Cards stack vertically, no horizontal scroll",P2,Edge,,Not Run
+TC-027,Error States,Network 500 shows toast,"Simulate API 500 via mock","1. Trigger /api/requisitions failure","User sees error toast, retry CTA",P2,Edge,,Not Run
+TC-028,Security,API denies unauthorized delete,"Logged employee","1. Call DELETE /api/vendors/:id via devtools fetch","Response 403, no deletion",P0,Neg,,Not Run
+TC-029,Accessibility,Keyboard navigation for RFQ form,"Focus at top","1. Tab through controls","Focus order logical, visible outline",P1,Pos,,Not Run
+TC-030,Performance,Lighthouse performance budget,"Running npm run lighthouse","1. Execute audit","Scores ≥80 for Perf/Accessibility/Best Practices",P1,Pos,,Not Run
+TC-031,RFQ,Vendor portal submits valid quote,"RFQ invitation shared","1. Navigate to /vendor\n2. Enter RFQ-2024-010\n3. Fill vendor info + line item prices\n4. Solve captcha\n5. Submit","Success message displayed; quote visible in procurement RFQ compare",P1,Pos,"RFQ-2024-010",Not Run
+TC-032,RFQ,Vendor portal rejects invalid captcha,"RFQ invitation shared","1. Open /vendor/rfqs/RFQ-2024-010\n2. Enter incorrect captcha value\n3. Submit","Submission blocked, error prompts retry",P1,Neg,,Not Run

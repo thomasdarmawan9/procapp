@@ -1,0 +1,204 @@
+[
+  {
+    "id": "QA-001",
+    "title": "Approval rule omits finance step for >100M IT requisition",
+    "severity": "Blocker",
+    "priority": "P0",
+    "area": "Settings",
+    "environment": "Local Chrome 121 / macOS 14.6 / 1280x800",
+    "preconditions": "Rule 'High value requires finance' active",
+    "steps_to_reproduce": [
+      "Login as employee",
+      "Create requisition totaling 120000000 IDR, category IT",
+      "Submit and review approval timeline"
+    ],
+    "expected_result": "Finance step present before procurement admin",
+    "actual_result": "Finance step missing; requisition approved after approver",
+    "attachments": ["screenshots/QA-001.png", "traces/QA-001.zip"],
+    "logs": ["POST /api/requisitions/:id/submit 200"],
+    "notes": "Step normalization removes finance role when multiple rules merge",
+    "detected_by": "Manual",
+    "build": "8fd1a4c"
+  },
+  {
+    "id": "QA-002",
+    "title": "RFQ send button remains disabled after failed attempt",
+    "severity": "Critical",
+    "priority": "P1",
+    "area": "RFQ",
+    "environment": "Local Chrome 121 / macOS 14.6 / 1280x800",
+    "preconditions": "Draft RFQ available",
+    "steps_to_reproduce": [
+      "Mock POST /api/rfqs/:id/send to 500",
+      "Click Send RFQ",
+      "Remove mock and click Send again"
+    ],
+    "expected_result": "Button re-enabled and request retried",
+    "actual_result": "Button stays disabled until page refresh",
+    "attachments": ["screenshots/QA-002.png", "traces/QA-002.zip"],
+    "logs": ["console error: Approval failed"],
+    "notes": "Mutation pending flag never reset in error branch",
+    "detected_by": "Automation",
+    "build": "8fd1a4c"
+  },
+  {
+    "id": "QA-003",
+    "title": "Return action accepts empty comment",
+    "severity": "Critical",
+    "priority": "P1",
+    "area": "Approvals",
+    "environment": "Local Firefox 121 / macOS 14.6 / 1280x800",
+    "preconditions": "Submitted requisition awaiting approver",
+    "steps_to_reproduce": [
+      "Login as approver",
+      "Click Return",
+      "Submit without filling comment"
+    ],
+    "expected_result": "Validation blocks submission",
+    "actual_result": "Return succeeds without comment",
+    "attachments": ["screenshots/QA-003.png"],
+    "logs": [],
+    "notes": "Comment optional in API; UI should enforce",
+    "detected_by": "Manual",
+    "build": "8fd1a4c"
+  },
+  {
+    "id": "QA-004",
+    "title": "Vendor rating allows value greater than 5",
+    "severity": "Major",
+    "priority": "P1",
+    "area": "Vendors",
+    "environment": "Local Chrome 121 / macOS 14.6 / 768x1024",
+    "preconditions": "Vendor modal open",
+    "steps_to_reproduce": [
+      "Open Add Vendor",
+      "Use keyboard to increment rating beyond 5",
+      "Save vendor"
+    ],
+    "expected_result": "Rating capped at 5",
+    "actual_result": "Vendor saved with rating 7",
+    "attachments": [],
+    "logs": [],
+    "notes": "Input type number missing max attribute",
+    "detected_by": "Manual",
+    "build": "8fd1a4c"
+  },
+  {
+    "id": "QA-005",
+    "title": "Attachments allow files larger than 5MB",
+    "severity": "Major",
+    "priority": "P1",
+    "area": "Requisition",
+    "environment": "Local Chrome 121 / macOS 14.6",
+    "preconditions": "Requisition form open",
+    "steps_to_reproduce": [
+      "Attempt to upload 8MB file",
+      "Observe file added"
+    ],
+    "expected_result": "Upload rejected with message",
+    "actual_result": "File accepted",
+    "attachments": [],
+    "logs": [],
+    "notes": "Uploader not validating file size",
+    "detected_by": "Exploratory",
+    "build": "8fd1a4c"
+  },
+  {
+    "id": "QA-006",
+    "title": "RFQ highlight contrast below WCAG",
+    "severity": "Major",
+    "priority": "P2",
+    "area": "RFQ",
+    "environment": "Local Chrome 121 / macOS 14.6",
+    "preconditions": "RFQ with quotes",
+    "steps_to_reproduce": [
+      "Open RFQ comparison table",
+      "Inspect highlighted lowest price cell"
+    ],
+    "expected_result": "Contrast ≥ 4.5:1",
+    "actual_result": "Contrast measured 2.8:1",
+    "attachments": ["screenshots/QA-006.png"],
+    "logs": [],
+    "notes": "Need darker highlight token",
+    "detected_by": "Accessibility",
+    "build": "8fd1a4c"
+  },
+  {
+    "id": "QA-007",
+    "title": "Locale switch clears vendor modal input",
+    "severity": "Minor",
+    "priority": "P2",
+    "area": "Vendors",
+    "environment": "Local Chrome 121 / macOS 14.6",
+    "preconditions": "Vendor modal with typed data",
+    "steps_to_reproduce": [
+      "Fill vendor form",
+      "Toggle locale to ID"
+    ],
+    "expected_result": "Data persists",
+    "actual_result": "Fields reset",
+    "attachments": [],
+    "logs": [],
+    "notes": "Locale store reset triggers component re-mount",
+    "detected_by": "Exploratory",
+    "build": "8fd1a4c"
+  },
+  {
+    "id": "QA-008",
+    "title": "Approvals table causes horizontal scroll on mobile",
+    "severity": "Minor",
+    "priority": "P3",
+    "area": "Approvals",
+    "environment": "Chrome Pixel 5 emulation",
+    "preconditions": "Viewport 360x740",
+    "steps_to_reproduce": [
+      "Open /approvals at 360px width"
+    ],
+    "expected_result": "Table fits without scroll",
+    "actual_result": "Horizontal scrollbar visible",
+    "attachments": [],
+    "logs": [],
+    "notes": "Need responsive table treatment",
+    "detected_by": "Exploratory",
+    "build": "8fd1a4c"
+  },
+  {
+    "id": "QA-009",
+    "title": "Vendor deletion lacks confirmation dialog",
+    "severity": "Critical",
+    "priority": "P1",
+    "area": "Vendors",
+    "environment": "Local Chrome 121",
+    "preconditions": "Procurement admin logged in",
+    "steps_to_reproduce": [
+      "Click delete icon on vendor row"
+    ],
+    "expected_result": "Confirmation modal",
+    "actual_result": "Vendor deleted immediately",
+    "attachments": [],
+    "logs": ["DELETE /api/vendors/:id 200"],
+    "notes": "Risk of accidental deletions",
+    "detected_by": "Manual",
+    "build": "8fd1a4c"
+  },
+  {
+    "id": "QA-010",
+    "title": "PO issue action allows double submission",
+    "severity": "Major",
+    "priority": "P2",
+    "area": "PO",
+    "environment": "Local Chrome 121",
+    "preconditions": "Draft PO open",
+    "steps_to_reproduce": [
+      "Navigate to PO detail",
+      "Double-click Issue"
+    ],
+    "expected_result": "Single request, button disabled",
+    "actual_result": "Multiple PATCH requests sent",
+    "attachments": [],
+    "logs": ["PATCH /api/pos/:id 200 (twice)"],
+    "notes": "Need loading guard",
+    "detected_by": "Automation",
+    "build": "8fd1a4c"
+  }
+]
