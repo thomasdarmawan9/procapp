@@ -15,6 +15,7 @@ import { usePreferencesStore } from "@/stores/preferences-store";
 import { useTranslation } from "@/hooks/use-translation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AppShell({ children, initialUser }: React.PropsWithChildren<{ initialUser: User }>) {
   const user = useAuthStore((state) => state.user);
@@ -26,12 +27,13 @@ export function AppShell({ children, initialUser }: React.PropsWithChildren<{ in
   const locale = usePreferencesStore((state) => state.locale);
   const setLocale = usePreferencesStore((state) => state.setLocale);
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
-    if (initialUser) {
-      setUser(initialUser);
-    }
-  }, [initialUser, setUser]);
+    setUser(initialUser);
+    queryClient.setQueryData<{ user: User | null }>(["session"], { user: initialUser });
+    queryClient.invalidateQueries({ queryKey: ["session"] }).catch(() => {});
+  }, [initialUser, queryClient, setUser]);
 
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
@@ -40,9 +42,12 @@ export function AppShell({ children, initialUser }: React.PropsWithChildren<{ in
       await fetch("/api/auth/login", { method: "DELETE" });
     } catch (error) {
       console.error("Failed to clear session", error);
+    } finally {
+      queryClient.setQueryData<{ user: User | null }>(["session"], { user: null });
+      queryClient.invalidateQueries({ queryKey: ["session"] }).catch(() => {});
+      setUser(null);
+      router.push("/login");
     }
-    setUser(null);
-    router.push("/login");
   };
 
   return (

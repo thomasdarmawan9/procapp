@@ -14,6 +14,7 @@ import { apiFetch } from "@/lib/api-client";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuthStore } from "@/stores/auth-store";
 import type { User } from "@/lib/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 const roleOptions = [
   { label: "Employee", value: "employee" },
@@ -26,6 +27,7 @@ export function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
   const setUser = useAuthStore((state) => state.setUser);
+  const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "employee@example.com", role: "employee" }
@@ -38,6 +40,8 @@ export function LoginForm() {
         body: JSON.stringify(data)
       });
       setUser(user);
+      queryClient.setQueryData<{ user: User | null }>(["session"], { user });
+      queryClient.invalidateQueries({ queryKey: ["session"] }).catch(() => {});
       toast({ description: "Welcome back" });
       router.push("/dashboard");
     } catch (error) {

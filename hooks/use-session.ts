@@ -30,10 +30,13 @@ export const useSession = () => {
   });
 
   useEffect(() => {
-    if (query.data?.user) {
-      setUser(query.data.user);
+    if (query.status === "success") {
+      setUser(query.data?.user ?? null);
     }
-  }, [query.data, setUser]);
+    if (query.status === "error") {
+      setUser(null);
+    }
+  }, [query.status, query.data, setUser]);
 
   return { user: user ?? null, ...query };
 };
