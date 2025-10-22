@@ -48,7 +48,7 @@ export function RequisitionTable({ initialData }: { initialData: RequisitionResp
         search: filters.search
       }),
     initialData,
-    keepPreviousData: true
+    placeholderData: (previousData) => previousData
   });
 
   React.useEffect(() => {

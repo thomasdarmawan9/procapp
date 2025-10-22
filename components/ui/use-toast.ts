@@ -6,11 +6,14 @@ import type { ToastProps } from "@radix-ui/react-toast";
 const TOAST_LIMIT = 5;
 const TOAST_REMOVE_DELAY = 1000;
 
+type ToastVariant = "default" | "destructive";
+
 type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: React.ReactNode;
+  variant?: ToastVariant;
 };
 
 const actionTypes = {

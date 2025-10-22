@@ -17,7 +17,7 @@ import { apiFetch } from "@/lib/api-client";
 import { formatCurrency } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import type { Vendor } from "@/lib/types";
+import type { Vendor, Requisition } from "@/lib/types";
 
 type BudgetSummary = {
   id: string;
@@ -81,7 +81,7 @@ export function RequisitionForm({ defaultValues, requisitionId, mode = "create" 
     } satisfies RequisitionFormValues;
     try {
       if (mode === "create") {
-        const result = await apiFetch("/api/requisitions", {
+        const result = await apiFetch<Requisition>("/api/requisitions", {
           method: "POST",
           body: JSON.stringify(payload)
         });

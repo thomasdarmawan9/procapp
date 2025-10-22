@@ -47,7 +47,7 @@ const conditionWeight = (rule: ApprovalRule) => {
 };
 
 const normalizeSteps = (steps: ApprovalRuleStep[]): ApprovalRuleStep[] => {
-  const uniqueRoles = new Map<ApprovalRuleStep, ApprovalRuleStep>();
+  const uniqueRoles = new Map<ApprovalRuleStep['role'], ApprovalRuleStep>();
 
   steps
     .slice()

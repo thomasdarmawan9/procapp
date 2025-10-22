@@ -40,7 +40,7 @@ export function RfqForm() {
 
   const mutation = useMutation({
     mutationFn: (values: z.infer<typeof rfqFormSchema>) =>
-      apiFetch("/api/rfqs", {
+      apiFetch<{ id: string }>("/api/rfqs", {
         method: "POST",
         body: JSON.stringify(values)
       }),

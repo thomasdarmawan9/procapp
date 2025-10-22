@@ -9,6 +9,10 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 
+type ColumnMeta = {
+  label?: string;
+};
+
 type DataTableToolbarProps<TData> = {
   table: Table<TData>;
   toolbar?: React.ReactNode;
@@ -35,7 +39,10 @@ export function DataTableToolbar<TData>({ table, toolbar, hideSearch }: DataTabl
     const headers = table
       .getAllLeafColumns()
       .filter((column) => column.getIsVisible())
-      .map((column) => column.columnDef.meta?.label ?? column.id);
+      .map((column) => {
+        const meta = column.columnDef.meta as ColumnMeta | undefined;
+        return meta?.label ?? column.id;
+      });
 
     const csv = [
       headers.join(","),
@@ -101,7 +108,7 @@ export function DataTableToolbar<TData>({ table, toolbar, hideSearch }: DataTabl
                   checked={column.getIsVisible()}
                   onCheckedChange={(value) => column.toggleVisibility(!!value)}
                 >
-                  {column.columnDef.meta?.label ?? column.id}
+                  {(column.columnDef.meta as ColumnMeta | undefined)?.label ?? column.id}
                 </DropdownMenuCheckboxItem>
               ))}
           </DropdownMenuContent>

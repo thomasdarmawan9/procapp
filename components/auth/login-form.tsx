@@ -13,6 +13,7 @@ import type { z } from "zod";
 import { apiFetch } from "@/lib/api-client";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuthStore } from "@/stores/auth-store";
+import type { User } from "@/lib/types";
 
 const roleOptions = [
   { label: "Employee", value: "employee" },
@@ -32,7 +33,7 @@ export function LoginForm() {
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
-      const user = await apiFetch("/api/auth/login", {
+      const user = await apiFetch<User>("/api/auth/login", {
         method: "POST",
         body: JSON.stringify(data)
       });

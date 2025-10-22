@@ -33,7 +33,7 @@ export const test = base.extend<TestFixtures>({
         {
           name: 'proc-session',
           value: role === 'employee' ? 'user-employee' : role === 'approver' ? 'user-approver' : role === 'finance' ? 'user-finance' : 'user-procurement',
-          url: page.context()._options.baseURL || 'http://localhost:3000'
+          url: process.env.PLAYWRIGHT_TEST_BASE_URL ?? 'http://localhost:3000'
         }
       ]);
     });
