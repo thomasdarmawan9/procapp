@@ -2,7 +2,7 @@ import { getDb } from '../db';
 import type { Budget } from '../types';
 
 const ACTIVE_REQUISITION_STATUSES = new Set(['submitted', 'approved']);
-const ACTIVE_PO_STATUSES = new Set(['draft', 'issued', 'partially_received', 'closed']);
+const ACTIVE_PO_STATUSES = new Set(['draft', 'in_progress', 'issued', 'partially_received', 'closed']);
 
 type BudgetUsageOptions = {
   excludeRequisitionIds?: string[];

@@ -186,7 +186,15 @@ export const approvalActionSchema = z.object({
 
 export const loginSchema = z.object({
   email: z.string().email(),
-  role: roleEnum
+  password: z.string().min(6, 'Password must be at least 6 characters')
+});
+
+export const userCreateSchema = z.object({
+  name: z.string().min(2, 'Name is required'),
+  email: z.string().email(),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  role: roleEnum,
+  department: z.string().min(2, 'Department is required')
 });
 
 export const vendorQuoteSubmissionSchema = z.object({

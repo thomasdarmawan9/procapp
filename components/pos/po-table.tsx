@@ -10,18 +10,26 @@ import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Money } from "@/components/shared/money";
 import { formatDate } from "@/lib/utils";
-import type { PO } from "@/lib/types";
+import type { PO, RFQ } from "@/lib/types";
 import { apiFetch } from "@/lib/api-client";
 import { useToast } from "@/components/ui/use-toast";
 
-const statusOptions: PO["status"][] = ["draft", "issued", "partially_received", "closed", "canceled"];
+const statusOptions: PO["status"][] = ["draft", "in_progress", "issued", "partially_received", "closed", "canceled"];
 
 type PoResponse = {
   pos: PO[];
 };
 
+type RfqResponse = {
+  rfqs: RFQ[];
+};
+
 async function fetchPos() {
   return apiFetch<PoResponse>("/api/pos");
+}
+
+async function fetchRfqs() {
+  return apiFetch<RfqResponse>("/api/rfqs");
 }
 
 export function PoTable() {
@@ -29,12 +37,30 @@ export function PoTable() {
   const [filter, setFilter] = React.useState({ status: "all", search: "" });
 
   const query = useQuery({ queryKey: ["pos"], queryFn: fetchPos });
+  const rfqQuery = useQuery({ queryKey: ["rfqs"], queryFn: fetchRfqs });
 
   React.useEffect(() => {
     if (query.error instanceof Error) {
       toast({ description: query.error.message, variant: "destructive" });
     }
   }, [query.error, toast]);
+
+  React.useEffect(() => {
+    if (rfqQuery.error instanceof Error) {
+      toast({ description: rfqQuery.error.message, variant: "destructive" });
+    }
+  }, [rfqQuery.error, toast]);
+
+  const rfqsByRequisition = React.useMemo(() => {
+    const map = new Map<string, RFQ[]>();
+    const rfqs = rfqQuery.data?.rfqs ?? [];
+    for (const rfq of rfqs) {
+      const list = map.get(rfq.requisitionId) ?? [];
+      list.push(rfq);
+      map.set(rfq.requisitionId, list);
+    }
+    return map;
+  }, [rfqQuery.data?.rfqs]);
 
   const filtered = React.useMemo(() => {
     const list = query.data?.pos ?? [];
@@ -73,9 +99,32 @@ export function PoTable() {
         header: "Created",
         cell: ({ row }) => formatDate(row.original.createdAt),
         meta: { label: "Created" }
+      },
+      {
+        id: "rfqs",
+        header: "RFQs",
+        cell: ({ row }) => {
+          const linkedRfqs =
+            row.original.linkedRequisitionIds.flatMap((id) => rfqsByRequisition.get(id) ?? []);
+
+          if (!linkedRfqs.length) {
+            return <span className="text-muted-foreground">—</span>;
+          }
+
+          return (
+            <div className="flex flex-wrap gap-1">
+              {linkedRfqs.map((rfq) => (
+                <Link key={rfq.id} href={`/rfqs/${rfq.id}`} className="text-primary underline">
+                  {rfq.rfqNo}
+                </Link>
+              ))}
+            </div>
+          );
+        },
+        meta: { label: "RFQs" }
       }
     ],
-    []
+    [rfqsByRequisition]
   );
 
   const pageSize = Math.max(filtered.length, 1);
@@ -87,7 +136,7 @@ export function PoTable() {
       page={1}
       pageSize={pageSize}
       total={filtered.length}
-      isLoading={query.isLoading}
+      isLoading={query.isLoading || rfqQuery.isLoading}
       toolbar={
         <div className="flex items-center gap-2">
           <Select value={filter.status} onValueChange={(value) => setFilter((prev) => ({ ...prev, status: value }))}>

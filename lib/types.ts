@@ -13,6 +13,11 @@ export interface User {
   name: string;
   role: Role;
   email: string;
+  department?: string;
+}
+
+export interface StoredUser extends User {
+  password: string;
 }
 
 export type VendorCategory = 'IT' | 'Office' | 'Logistics' | 'Services' | 'Facilities';
@@ -125,7 +130,7 @@ export interface POLine {
   total: number;
 }
 
-export type POStatus = 'draft' | 'issued' | 'partially_received' | 'closed' | 'canceled';
+export type POStatus = 'draft' | 'in_progress' | 'issued' | 'partially_received' | 'closed' | 'canceled';
 
 export interface PO {
   id: string;

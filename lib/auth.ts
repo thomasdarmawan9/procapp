@@ -2,9 +2,22 @@
 
 import { cookies } from 'next/headers';
 import { getDb } from './db';
-import { Role, User } from './types';
+import { Role, StoredUser, User } from './types';
 
 const SESSION_COOKIE = 'proc-session';
+
+export const sanitizeUser = (user: StoredUser): User => {
+  const { password: _password, ...rest } = user;
+  void _password;
+  return rest;
+};
+
+const toPublicUser = (user: StoredUser | null): User | null => {
+  if (!user) {
+    return null;
+  }
+  return sanitizeUser(user);
+};
 
 export const getCurrentUser = (): User | null => {
   const cookieStore = cookies();
@@ -13,7 +26,8 @@ export const getCurrentUser = (): User | null => {
     return null;
   }
   const { users } = getDb();
-  return users.find((user) => user.id === sessionValue) ?? null;
+  const stored = users.find((user) => user.id === sessionValue) ?? null;
+  return toPublicUser(stored);
 };
 
 export const requireUser = (allowed?: Role | Role[]): User => {

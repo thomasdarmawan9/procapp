@@ -22,10 +22,15 @@ export function PoDetail({ po, requisitions }: { po: PO; requisitions: Requisiti
   const [status, setStatus] = React.useState<POStatus>(po.status);
   const [proofs, setProofs] = React.useState<FileMeta[]>(() => [...(po.paymentProofs ?? [])]);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [isHydrated, setIsHydrated] = React.useState(false);
 
-  const statusOptions: POStatus[] = ["draft", "issued", "partially_received", "closed", "canceled"];
+  const statusOptions: POStatus[] = ["draft", "in_progress", "issued", "partially_received", "closed", "canceled"];
   const isLocked = currentPo.status === "closed" || currentPo.status === "canceled";
-  const canEdit = canManage && !isLocked;
+  const canEdit = isHydrated ? canManage && !isLocked : false;
+
+  React.useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   React.useEffect(() => {
     setCurrentPo(po);
@@ -134,7 +139,7 @@ export function PoDetail({ po, requisitions }: { po: PO; requisitions: Requisiti
                 <p className="text-sm font-medium text-muted-foreground">Proof of Payment</p>
                 <div className="mt-2">{renderProofList(currentPo.paymentProofs)}</div>
               </div>
-              {canManage && isLocked ? (
+              {isHydrated && canManage && isLocked ? (
                 <p className="text-xs text-muted-foreground">Further changes are disabled once a PO is closed or canceled.</p>
               ) : null}
             </div>

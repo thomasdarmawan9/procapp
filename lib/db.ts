@@ -5,13 +5,14 @@ import {
   PO,
   RFQ,
   Requisition,
+  StoredUser,
   User,
   Vendor,
   VendorCategory
 } from './types';
 
 type Database = {
-  users: User[];
+  users: StoredUser[];
   vendors: Vendor[];
   requisitions: Requisition[];
   rfqs: RFQ[];
@@ -102,30 +103,38 @@ const seedVendors = (): Vendor[] => [
   }
 ];
 
-const seedUsers = (): User[] => [
+const seedUsers = (): StoredUser[] => [
   {
     id: 'user-employee',
     name: 'Employee A',
     role: 'employee',
-    email: 'employee@example.com'
+    email: 'employee@example.com',
+    department: 'IT',
+    password: 'welcome123'
   },
   {
     id: 'user-approver',
     name: 'Manager B',
     role: 'approver',
-    email: 'approver@example.com'
+    email: 'approver@example.com',
+    department: 'IT',
+    password: 'welcome123'
   },
   {
     id: 'user-procurement',
     name: 'Citra Prasetyo',
     role: 'procurement_admin',
-    email: 'procurement@example.com'
+    email: 'procurement@example.com',
+    department: 'Procurement',
+    password: 'welcome123'
   },
   {
     id: 'user-finance',
     name: 'Dito Wijaya',
     role: 'finance',
-    email: 'finance@example.com'
+    email: 'finance@example.com',
+    department: 'Finance',
+    password: 'welcome123'
   }
 ];
 

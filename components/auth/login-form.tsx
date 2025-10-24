@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { loginSchema } from "@/lib/schemas";
 import type { z } from "zod";
 import { apiFetch } from "@/lib/api-client";
@@ -16,21 +15,21 @@ import { useAuthStore } from "@/stores/auth-store";
 import type { User } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
 
-const roleOptions = [
-  { label: "Employee", value: "employee" },
-  { label: "Approver", value: "approver" },
-  { label: "Procurement Admin", value: "procurement_admin" },
-  { label: "Finance", value: "finance" }
-] as const;
-
 export function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
   const setUser = useAuthStore((state) => state.setUser);
   const queryClient = useQueryClient();
+  const DEMO_PASSWORD = "welcome123";
+  const demoAccounts = [
+    { label: "Employee", email: "employee@example.com" },
+    { label: "Approver", email: "approver@example.com" },
+    { label: "Procurement Admin", email: "procurement@example.com" },
+    { label: "Finance", email: "finance@example.com" }
+  ] as const;
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "employee@example.com", role: "employee" }
+    defaultValues: { email: "employee@example.com", password: DEMO_PASSWORD }
   });
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
@@ -69,24 +68,13 @@ export function LoginForm() {
         />
         <FormField
           control={form.control}
-          name="role"
+          name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Role</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {roleOptions.map((role) => (
-                    <SelectItem key={role.value} value={role.value}>
-                      {role.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="••••••••" {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -94,6 +82,29 @@ export function LoginForm() {
         <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
           Sign In
         </Button>
+
+        <div className="pt-4">
+          <p className="mb-2 text-xs text-muted-foreground">Demo accounts (password: {DEMO_PASSWORD})</p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {demoAccounts.map((acc) => (
+              <Button
+                key={acc.email}
+                type="button"
+                variant="outline"
+                className="justify-start"
+                onClick={() => {
+                  form.setValue("email", acc.email, { shouldValidate: true });
+                  form.setValue("password", DEMO_PASSWORD, { shouldValidate: true });
+                }}
+              >
+                <div className="flex flex-col text-left">
+                  <span className="text-sm font-medium">{acc.label}</span>
+                  <span className="text-xs text-muted-foreground">{acc.email}</span>
+                </div>
+              </Button>
+            ))}
+          </div>
+        </div>
       </form>
     </Form>
   );
