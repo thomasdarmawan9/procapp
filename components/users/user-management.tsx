@@ -159,8 +159,8 @@ export function UserManagement() {
                 )}
               />
               <div className="flex justify-end md:col-span-2">
-                <Button type="submit" disabled={createUser.isLoading}>
-                  {createUser.isLoading ? "Creating..." : "Create User"}
+                <Button type="submit" disabled={createUser.isPending}>
+                  {createUser.isPending ? "Creating..." : "Create User"}
                 </Button>
               </div>
             </form>
