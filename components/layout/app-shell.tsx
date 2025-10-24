@@ -72,12 +72,12 @@ export function AppShell({ children, initialUser }: React.PropsWithChildren<{ in
           <div className="flex items-center gap-3">
             {user ? <UserAvatar user={user} /> : null}
             <Select value={locale} onValueChange={(value) => setLocale(value as 'en' | 'id')}>
-              <SelectTrigger className="w-24">
-                <SelectValue placeholder="Lang" />
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder={t('ui.language')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">EN</SelectItem>
-                <SelectItem value="id">ID</SelectItem>
+                <SelectItem value="en">{t('locale.english')}</SelectItem>
+                <SelectItem value="id">{t('locale.indonesian')}</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" size="sm" onClick={toggleTheme}>

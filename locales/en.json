@@ -22,5 +22,8 @@
   "labels.requester": "Requester",
   "labels.costCenter": "Cost Center",
   "labels.total": "Total",
-  "labels.department": "Department"
+  "labels.department": "Department",
+  "ui.language": "Language",
+  "locale.english": "English",
+  "locale.indonesian": "Indonesian"
 }
